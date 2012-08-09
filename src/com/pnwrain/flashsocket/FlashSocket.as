@@ -1,6 +1,5 @@
 package com.pnwrain.flashsocket
 {
-	import com.adobe.serialization.json.JSON;
 	import com.pnwrain.flashsocket.events.FlashSocketEvent;
 	
 	import flash.events.Event;
@@ -68,7 +67,7 @@ package com.pnwrain.flashsocket
 			this.headers = headers;
 			
 			var r:URLRequest = new URLRequest();
-			r.url = httpProtocal+"://" + domain + "/socket.io/1/?time=" + new Date().getTime();
+			r.url = httpProtocal+"://" + domain + "/socket.io/1/?time=" + new Date().time;
 			r.method = URLRequestMethod.POST;
 			var ul:URLLoader = new URLLoader(r);
 			ul.addEventListener(Event.COMPLETE, onDiscover);
@@ -245,11 +244,11 @@ package com.pnwrain.flashsocket
 					break;
 				case '4':
 					var fe:FlashSocketEvent = new FlashSocketEvent(FlashSocketEvent.MESSAGE);
-					fe.data = JSON.decode(dm.msg);
+					fe.data = JSON.parse(dm.msg);
 					dispatchEvent(fe);
 					break;
 				case '5':
-					var m:Object = JSON.decode(dm.msg);
+					var m:Object = JSON.parse(dm.msg);
 					var e:FlashSocketEvent = new FlashSocketEvent(m.name);
 					e.data = m.args;
 					dispatchEvent(e);
@@ -257,7 +256,7 @@ package com.pnwrain.flashsocket
 				case '6':
 					var parts:Object =  this.ackRegexp.exec(dm.msg);
 					var id:int = int(parts[1]);
-					var args:Array = JSON.decode(parts[2]);
+					var args:Array = JSON.parse(parts[2]) as Array;
 					if (this.acks.hasOwnProperty(id)) {
 						var func:Function = this.acks[id] as Function;
 						//pass however many args the function is looking for back to it
@@ -323,12 +322,12 @@ package com.pnwrain.flashsocket
 					//webSocket.send(_encode(msg));
 					webSocket.send('3:'+messageId+'::' + msg as String);
 				}else if ( msg is Object ){
-					webSocket.send('4:'+messageId+'::' + JSON.encode(msg));
+					webSocket.send('4:'+messageId+'::' + JSON.stringify(msg));
 				}else{
 					throw("Unsupported Message Type");
 				}
 			}else{
-				webSocket.send('5:'+messageId+'::' + JSON.encode({"name":event,"args":msg}));
+				webSocket.send('5:'+messageId+'::' + JSON.stringify({"name":event,"args":msg}));
 			}
 		}
 		
