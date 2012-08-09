@@ -1,0 +1,7 @@
+bin
+
+# Flex Builder Files
+.project
+.settings
+.actionScriptProperties
+.flexLibProperties
