@@ -36,13 +36,14 @@ package com.pnwrain.flashsocket
 		private var proxyHost:String;
 		private var proxyPort:int;
 		private var headers:String;
+		private var policyUrl:String;
 		private var timer:Timer;
 		
 		private var ackRegexp:RegExp = new RegExp('(\\d+)\\+(.*)');
 		private var ackId:int = 0;
 		private var acks:Object = { };
 		
-		public function FlashSocket( domain:String, protocol:String=null, proxyHost:String = null, proxyPort:int = 0, headers:String = null)
+		public function FlashSocket( domain:String, protocol:String=null, proxyHost:String = null, proxyPort:int = 0, headers:String = null, policyUrl:String = null)
 		{
 			var httpProtocal:String = "http";
 			var webSocketProtocal:String = "ws";
@@ -65,6 +66,7 @@ package com.pnwrain.flashsocket
 			this.proxyHost = proxyHost;
 			this.proxyPort = proxyPort;
 			this.headers = headers;
+			this.policyUrl = policyUrl;
 			
 			var r:URLRequest = new URLRequest();
 			r.url = httpProtocal+"://" + domain + "/socket.io/1/?time=" + new Date().time;
@@ -154,6 +156,9 @@ package com.pnwrain.flashsocket
 		
 		protected function loadDefaultPolicyFile(wsUrl:String):void {
 			var policyUrl:String = "xmlsocket://" + URLUtil.getServerName(wsUrl) + ":843";
+			if (this.policyUrl) {
+				policyUrl = this.policyUrl;
+			}
 			log("policy file: " + policyUrl);
 			Security.loadPolicyFile(policyUrl);
 		}
